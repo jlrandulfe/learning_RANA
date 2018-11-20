@@ -26,11 +26,10 @@ Stat = require "ranalib_statistic"
 Map = require "ranalib_map"
 
 axon_link_length = 5
-init = true
 
 function initializeAgent()
 
-    Agent.changeColor{r=255}
+    Agent.changeColor{b=255}
     -- Initialize the soma at the middle of the map
     say("Axon Agent#: " .. ID .. " has been initialized")
 
@@ -41,13 +40,7 @@ end
 
 
 function takeStep()
-    if init == true then
-        -- Add the growth cone agent
-        growth_cone_x = PositionX + (axon_link_length+1)/2
-        growth_cone_y = PositionY
-        Agent.addAgent("growth_cone.lua", growth_cone_x, growth_cone_y)
-        init = false 
-    end
+
 end
 
 

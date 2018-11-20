@@ -28,7 +28,7 @@ Map = require "ranalsib_map"
 
 function initializeAgent()
 
-    Agent.changeColor{r=255}
+    Agent.changeColor{g=255}
     -- Initialize the soma at the middle of the map
     say("Axon Agent#: " .. ID .. " has been initialized")
     

@@ -29,6 +29,8 @@ Map = require "ranalib_map"
 
 axon_link_length = 5
 
+init = true
+
 function initializeAgent()
 
     Agent.changeColor{r=255}
@@ -41,15 +43,26 @@ function initializeAgent()
 	GridMove = true
     Moving = false
     
-    -- Add the first axon agent
-    axon_centre_x = PositionX + (axon_link_length+1)/2
-    axon_centre_y = PositionY
-    Agent.addAgent("axon.lua", axon_centre_x, axon_centre_y)
+
 
 end
 
 
 function takeStep()
+
+    if init == true then
+        -- Add the first axon agent
+        axon_centre_x = PositionX + (axon_link_length+1)/2
+        axon_centre_y = PositionY
+        Agent.addAgent("axon.lua", axon_centre_x, axon_centre_y)
+
+        -- Add the growth cone agent
+        growth_cone_x = axon_centre_x + (axon_link_length+1)/2
+        growth_cone_y = axon_centre_y
+        Agent.addAgent("growth_cone.lua", growth_cone_x, growth_cone_y)
+
+        init = false
+    end
 	
 end
 
