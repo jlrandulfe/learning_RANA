@@ -14,6 +14,9 @@ function initializeAgent()
         Agent.addAgent("soma.lua", Stat.randomInteger(10, ENV_WIDTH-10),
                        Stat.randomInteger(10, ENV_HEIGHT-10))	
     end
+
+    Agent.addAgent("pulse_generator.lua", Stat.randomInteger(10, ENV_WIDTH-10),
+                   Stat.randomInteger(10, ENV_HEIGHT-10))	
 end
 
 
