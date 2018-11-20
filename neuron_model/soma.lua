@@ -25,6 +25,7 @@ Agent = require "ranalib_agent"
 Stat = require "ranalib_statistic"
 Move = require "ranalib_movement"
 Map = require "ranalib_map"
+Event = require "ranalib_event"
 
 
 axon_link_length = 5
@@ -34,6 +35,7 @@ init = true
 function initializeAgent()
 
     Agent.changeColor{r=255}
+    Agent.joinGroup(ID)
     -- Initialize the soma at the middle of the map
     say("Soma Agent#: " .. ID .. " has been initialized")
     
@@ -42,8 +44,6 @@ function initializeAgent()
 	Speed = 0
 	GridMove = true
     Moving = false
-    
-
 
 end
 
@@ -59,11 +59,15 @@ function takeStep()
         -- Add the growth cone agent
         growth_cone_x = axon_centre_x + (axon_link_length+1)/2
         growth_cone_y = axon_centre_y
-        Agent.addAgent("growth_cone.lua", growth_cone_x, growth_cone_y)
+        new_agent = Agent.addAgent("growth_cone.lua", growth_cone_x,
+                                   growth_cone_y)
+        Event.emit{speed=343, description="assign_group", targetID=new_agent}
 
         init = false
     end
-	
+
+    Event.emit{speed=343, description="excited_neuron", targetGroup=ID}
+
 end
 
 

@@ -31,6 +31,8 @@ move = false
 
 axon_link_length = 5
 
+excited = false
+
 function initializeAgent()
 
     Agent.changeColor{g=255}
@@ -58,7 +60,7 @@ function takeStep()
     -- When the growth cone has travelled enough distance, a new axon segment
     -- agent is created.
 	if distance > axon_link_length then
-        Agent.addAgent("axon.lua", coords.x2, coords.y2)
+        new_agent = Agent.addAgent("axon.lua", coords.x2, coords.y2)
         coords.x2 = PositionX
         coords.y2 = PositionY
 	end
@@ -72,7 +74,12 @@ function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
         DestinationX = sourceX
         DestinationY = sourceY
         Moving = true
+    elseif eventDescription == "assign_group" then
+        Agent.joinGroup(sourceID)
+    elseif eventDescription == "excited_neuron" then
+        excited = true
     end
+
 end
 
 
