@@ -35,7 +35,7 @@ end
 function takeStep()
 
     -- Event for sending an electric pulse to the neurons
-    Event.emit{speed=343, description="electric_pulse"}
+    Event.emit{speed=0, description="electric_pulse"}
     say("Sending an electric pulse\n")
     
 end

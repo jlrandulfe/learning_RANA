@@ -32,6 +32,13 @@ move = false
 axon_link_length = 5
 
 excited = false
+excitation_level = 0
+min_time_diff = 0.0
+max_time_diff = 0.1
+
+absolute_time = 0
+excited_neuron_time = 0
+received_pulse_time = 0
 
 function initializeAgent()
 
@@ -65,19 +72,47 @@ function takeStep()
         coords.y2 = PositionY
 	end
 
+    if excitation_level > 80 then
+        Moving = true
+    else
+        Moving = false
+    end
+
+    -- Decrease the excitation level with time
+    if excitation_level > 0 then
+        excitation_level = excitation_level - 1
+    elseif excitation_level < 0 then
+        excitation_level = excitation_level + 1
+    end
+
+    absolute_time = absolute_time + STEP_RESOLUTION
+
 end
 
+
 function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
+
     if eventDescription == "electric_pulse" then
-        say("Received an electric pulse\n")
-        -- Set the growth cone direction to the electric pulse source
-        DestinationX = sourceX
-        DestinationY = sourceY
-        Moving = true
+        -- Get the time difference between the neuron excitation and the
+        -- received pulse. Move towards the electric pulse source if the
+        -- difference is between the thresholds.
+        received_pulse_time = absolute_time
+        time_diff = received_pulse_time - excited_neuron_time
+        say("Received electric pulse at time # " .. received_pulse_time .. "\n")
+        if time_diff > min_time_diff and time_diff < max_time_diff then
+            -- Set the growth cone direction to the electric pulse source
+            DestinationX = sourceX
+            DestinationY = sourceY
+            excitation_level = 100000
+        end
+
     elseif eventDescription == "assign_group" then
         Agent.joinGroup(sourceID)
+
     elseif eventDescription == "excited_neuron" then
         excited = true
+        excited_neuron_time = absolute_time
+        say("Neuron got triggered at time # " .. excited_neuron_time .. "\n")
     end
 
 end

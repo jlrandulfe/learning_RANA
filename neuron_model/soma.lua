@@ -61,15 +61,21 @@ function takeStep()
         growth_cone_y = axon_centre_y
         new_agent = Agent.addAgent("growth_cone.lua", growth_cone_x,
                                    growth_cone_y)
-        Event.emit{speed=343, description="assign_group", targetID=new_agent}
+        Event.emit{speed=0, description="assign_group", targetID=new_agent}
 
         init = false
     end
 
-    Event.emit{speed=343, description="excited_neuron", targetGroup=ID}
-
 end
 
+
+function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
+
+    if eventDescription == "electric_pulse" then
+        say("Neuron got triggered\n")
+        Event.emit{speed=0, description="excited_neuron", targetGroup=ID}
+    end
+end
 
 function cleanUp()
 	say("Agent #: " .. ID .. " is done\n")
