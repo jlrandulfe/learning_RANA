@@ -50,10 +50,11 @@ function initializeAgent()
 	Speed = 100
 	GridMove = true
 
-    destination_x = PositionX
-    destination_y = PositionY
-
+    -- Coordinates tracker, for creating new axon agents
     coords = {x1=PositionX, y1=PositionY, x2=PositionX, y2=PositionY}
+    -- Table containing info about the coordinates and intensity of incomming
+    -- electric pulses.
+    pulses_table = {}
 end
 
 
@@ -87,6 +88,25 @@ function takeStep()
 
     absolute_time = absolute_time + STEP_RESOLUTION
 
+    -- Set the growth cone direction to the electric pulse source
+    for key, values in pairs(pulses_table) do
+        -- Calculate the unit vector pointint towards the source
+        dx = values[1] - PositionX
+        dy = values[2] - PositionY
+        distance = math.sqrt(math.pow(dx, 2)+math.pow(dy, 2))
+        orientationX = dx / distance
+        orientationY = dy / distance
+        if distance > 1 then
+            -- Get the velocity vector
+            vx = orientationX * Speed
+            vy = orientationY * Speed
+        else
+            vx = 0
+            vy = 0
+        end
+        Move.setVelocity{x=vx, y=vy}
+        excitation_level = 100000
+    end
 end
 
 
@@ -94,29 +114,13 @@ function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
 
     if eventDescription == "electric_pulse" then
         -- Get the time difference between the neuron excitation and the
-        -- received pulse. Move towards the electric pulse source if the
+        -- received pulse. Store the electric pulse source if the
         -- difference is between the thresholds.
         received_pulse_time = absolute_time
         time_diff = received_pulse_time - excited_neuron_time
         say("Received electric pulse at time # " .. received_pulse_time .. "\n")
         if time_diff > min_time_diff and time_diff < max_time_diff then
-            -- Set the growth cone direction to the electric pulse source
-            -- Calculate the unit vector pointint towards the source
-            dx = sourceX - PositionX
-            dy = sourceY - PositionY
-            distance = math.sqrt(math.pow(dx, 2)+math.pow(dy, 2))
-            orientationX = dx / distance
-            orientationY = dy / distance
-            if distance > 1 then
-                -- Get the velocity vector
-                vx = orientationX * Speed
-                vy = orientationY * Speed
-            else
-                vx = 0
-                vy = 0
-            end
-            Move.setVelocity{x=vx, y=vy}
-            excitation_level = 100000
+            pulses_table[ID] = {sourceX, sourceY, Speed}
         end
 
     elseif eventDescription == "assign_group" then
