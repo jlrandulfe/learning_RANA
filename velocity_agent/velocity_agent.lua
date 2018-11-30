@@ -58,14 +58,11 @@ function takeStep()
     -- Distances to the centre of the map
     local dx = PositionX - ENV_WIDTH/2
     local dy = PositionY - ENV_HEIGHT/2
-    -- Angle of the agent relative to the horizontal axis crossing the
-    -- circle centre.
-    local theta = math.atan2(dy, dx)
 
     -- Velocity components for describing a circular trajectory around the
     -- map centre.
-    local vx =  -(speed * math.sin(theta))
-    local vy = speed * math.cos(theta)
+    local vx =  -(speed * dy/radius)
+    local vy = speed * dx/radius
 
     Move.setVelocity{x=vx, y=vy}
     
