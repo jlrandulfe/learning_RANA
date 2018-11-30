@@ -101,8 +101,21 @@ function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
         say("Received electric pulse at time # " .. received_pulse_time .. "\n")
         if time_diff > min_time_diff and time_diff < max_time_diff then
             -- Set the growth cone direction to the electric pulse source
-            DestinationX = sourceX
-            DestinationY = sourceY
+            -- Calculate the unit vector pointint towards the source
+            dx = sourceX - PositionX
+            dy = sourceY - PositionY
+            distance = math.sqrt(math.pow(dx, 2)+math.pow(dy, 2))
+            orientationX = dx / distance
+            orientationY = dy / distance
+            if distance > 1 then
+                -- Get the velocity vector
+                vx = orientationX * Speed
+                vy = orientationY * Speed
+            else
+                vx = 0
+                vy = 0
+            end
+            Move.setVelocity{x=vx, y=vy}
             excitation_level = 100000
         end
 
