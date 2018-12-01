@@ -24,6 +24,8 @@
 Event = require "ranalib_event"
 Agent = require "ranalib_agent"
 
+local intensity = 0
+
 function initializeAgent()
 
     say("Pulse generator #: " .. ID .. " has been initialized")
@@ -35,9 +37,17 @@ end
 function takeStep()
 
     -- Event for sending an electric pulse to the neurons
-    Event.emit{speed=0, description="electric_pulse"}
-    say("Sending an electric pulse\n")
+    Event.emit{speed=0, description="electric_pulse", table={intensity}}
     
+end
+
+
+function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
+
+    if eventDescription == "set_intensity" then
+        intensity = eventTable["intensity"]
+    end
+
 end
 
 

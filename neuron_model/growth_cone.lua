@@ -27,10 +27,12 @@ Event = require "ranalib_event"
 Move = require "ranalib_movement"
 Math = require "ranalib_math"
 
+-- Agent properties
 move = false
 
+-- Neuron properties
 axon_link_length = 5
-
+connected = false
 excited = false
 excitation_level = 0
 min_time_diff = 0.0
@@ -89,24 +91,32 @@ function takeStep()
     absolute_time = absolute_time + STEP_RESOLUTION
 
     -- Set the growth cone direction to the electric pulse source
-    for key, values in pairs(pulses_table) do
-        -- Calculate the unit vector pointint towards the source
-        dx = values[1] - PositionX
-        dy = values[2] - PositionY
-        distance = math.sqrt(math.pow(dx, 2)+math.pow(dy, 2))
-        orientationX = dx / distance
-        orientationY = dy / distance
-        if distance > 1 then
+    local vx = 0
+    local vy = 0
+    if not connected then
+        for key, values in pairs(pulses_table) do
+            -- Calculate the absolute distance and its X, Y decomposition
+            dx = values[1] - PositionX
+            dy = values[2] - PositionY
+            distance = math.sqrt(math.pow(dx, 2)+math.pow(dy, 2))
+            if distance < 2 then
+                say("Connected\n")
+                connected = true
+            end
+            -- Calculate the unit vector pointing towards the source
+            orientationX = dx / distance
+            orientationY = dy / distance
             -- Get the velocity vector
-            vx = orientationX * Speed
-            vy = orientationY * Speed
-        else
-            vx = 0
-            vy = 0
+            vx = vx + orientationX*values[3]
+            vy = vy + orientationY*values[3]
         end
-        Move.setVelocity{x=vx, y=vy}
-        excitation_level = 100000
+    else
+        vx = 0
+        vy = 0
     end
+    Move.setVelocity{x=vx, y=vy}
+
+    excitation_level = 100000
 end
 
 
@@ -118,9 +128,9 @@ function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
         -- difference is between the thresholds.
         received_pulse_time = absolute_time
         time_diff = received_pulse_time - excited_neuron_time
-        say("Received electric pulse at time # " .. received_pulse_time .. "\n")
         if time_diff > min_time_diff and time_diff < max_time_diff then
-            pulses_table[ID] = {sourceX, sourceY, Speed}
+            local intensity = eventTable[1]
+            pulses_table[sourceID] = {sourceX, sourceY, intensity}
         end
 
     elseif eventDescription == "assign_group" then
@@ -129,7 +139,6 @@ function handleEvent(sourceX, sourceY, sourceID, eventDescription, eventTable)
     elseif eventDescription == "excited_neuron" then
         excited = true
         excited_neuron_time = absolute_time
-        say("Neuron got triggered at time # " .. excited_neuron_time .. "\n")
     end
 
 end
