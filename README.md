@@ -1,3 +1,7 @@
+# Project wiki
+
+For more information about the project, visit [the wiki](https://github.com/jlrandulfe/learning_RANA/wiki)
+
 # Main modules and workflow in RANA
 
 ## main.cpp
